@@ -1,4 +1,5 @@
 #!/usr/bin/python
+#Autor : Walter Cuestas Agramonte @wcu35745
 import dns.query
 import dns.zone
 import dns.resolver
