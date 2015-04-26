@@ -1,8 +1,9 @@
 #!/usr/bin/python
+#Autor : Walter Cuestas, @wcu35745
 import urllib2, urllib, sys, os
 
 if len(sys.argv) < 4:
-	sys.exit("Usalo asi : " + sys.argv[0] + " archivo_gnmap archivo_files.csv_de_exploitdb_ruta_completa Cantidad_Caracteres_Banner_a_Buscar\n")
+	sys.exit("Usalo asi : " + sys.argv[0] + " archivo_gnmap archivo_files.csv_de_exploitdb (ruta completa) Cantidad_Caracteres_Banner_a_Buscar\n")
 #No funciona muy bien porque los banners tienen informacion que hace la busqueda inexacta en muchos casos
 #Por eso el usuario debe definir cuantos caracteres del banner se usaran en la busqueda
 
@@ -16,8 +17,6 @@ exploitdb = open(sys.argv[2],"r+")
 todos_los_exploits = exploitdb.readlines()
 exploitdb.close()
 
-print "<HTML>"
-
 for cada_linea in todas_las_lineas:
 	#Separa por espacio para sacar la IP del host
 	delimitador1 = cada_linea.split(' ')
@@ -30,9 +29,7 @@ for cada_linea in todas_las_lineas:
 	#Valida si los ultimos 7 chars dicen Ports porque asi identica que es la linea con la info
 	if str(linea_ports)[-7:] == "Ports']":
 		host = delimitador1[1:2]
-		print "<P>"
-		print host
-		print "<P>"
+		print "\n\033[0;31;40mHOST ---> " + str(host) + "\033[0m\n"
 		
 		#limite_inicio es el 7mo elemento (inicio en cero el conteo) y limite_fin es el 8vo elemento (que no lo incluye)
 		limite_inicio = 6
@@ -47,7 +44,7 @@ for cada_linea in todas_las_lineas:
 			if str(banner) <> "['']" :
 				#Para dejar solo el texto y remover ['xxx']
 				label = str(banner).strip('[]').replace("'","") 
-				print label + "---><BR>"
+				print "\n\033[0;32;40mBANNER ---> " + label + "\033[0m\n"
 				#url = 'http://www.exploit-db.com/search/?action=search&filter_page=1&filter_description=&filter_exploit_text='+str(banner).strip('[]').replace("'","")+'&filter_author=&filter_platform=0&filter_type=0&filter_lang_id=0&filter_port=&filter_osvdb=&filter_cve='
 				#webbrowser.open(url,new=2,autoraise=True)
 				for cada_exploit in todos_los_exploits:
@@ -56,19 +53,7 @@ for cada_linea in todas_las_lineas:
 					if exploit.find(label[:long_banner_2_use]) != -1:
 						exploitfile = str(delimitadorexploit[1:2]).strip('[]').replace("'","")
 						exploitfound = str(delimitadorexploit[2:3]).strip('[]').replace("'","")
-						print "<a href=\"file:///pentest/exploits/exploitdb/" + exploitfile +"\">" + exploitfound + "</a>"
-						print "<BR>"
-				
+						print "\033[0;36;40mFILE --->\033[0m /pentest/exploits/exploitdb/" + exploitfile + " \033[0;31;40m EXPLOIT --->\033[0m " + exploitfound
 			limite_inicio = limite_inicio + 7
 			limite_fin = limite_fin + 7
 
-print "</HTML>"
-#banner = "apache 2.0.2"
-#url = 'http://www.exploit-db.com/search/?action=search&filter_page=1&filter_description=&filter_exploit_text='+banner+'&filter_author=&filter_platform=0&filter_type=0&filter_lang_id=0&filter_port=&filter_osvdb=&filter_cve='
-
-#/consulta = urllib2.Request('http://www.exploit-db.com/search/?action=search&filter_page=1&filter_description=&filter_exploit_text='+banner+'&filter_author=&filter_platform=0&filter_type=0&filter_lang_id=0&filter_port=&filter_osvdb=&filter_cve=')
-#pregunta = urllib2.urlopen(consulta)
-#respuesta = pregunta.read()
-#print(respuesta)
-
-#webbrowser.open(url,new=2,autoraise=True)
