@@ -1,5 +1,7 @@
 #!/usr/bin/python
 #Autor : Walter Cuestas Agramonte @wcu35745
+#Note for EC Council ECC Points
+
 import dns.query
 import dns.zone
 import dns.resolver
