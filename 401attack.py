@@ -1,4 +1,5 @@
 #!/usr/bin/python
+"Author : Walter Cuestas @wcu35745
 #urls2test.lst must contain full urls such as http://www.example.com/news and just one per line
 #usuarios.lst must contain the user names to test and just one per line
 #passwords.lst must contain the passwords to test and just one per line
