@@ -2,6 +2,7 @@
 #This tool takes an URLs list (from previous web directory search) and search for web directories
 #requiring Basic Authentication, then, proceeds to do a dictionary attack.  If there is a 
 #successful authentication, it shows the page (raw html) on stdout.
+#Next version will test for PUT method enabled and try to write something
 #Author : Walter Cuestas @wcu35745
 #urls2test.lst must contain full urls such as http://www.example.com/news and just one per line
 #usuarios.lst must contain the user names to test and just one per line
