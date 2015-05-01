@@ -10,7 +10,6 @@
 import urllib2
 import sys
 import base64
-import httplib
 
 headers = { 'User-Agent' : 'Mozilla/5.0' }
 
@@ -19,7 +18,6 @@ todos_los_urls2test = urls2test.readlines()
 urls2test.close()
 
 for url in todos_los_urls2test:
-        #solicitud = urllib2.Request(todos_los_urls2test[0],None, headers)
         solicitud = urllib2.Request(url,None, headers)
 
         try:
@@ -40,9 +38,6 @@ for url in todos_los_urls2test:
                        solicitud.add_header("Authorization", "Basic %s" % base64string)
                        try:
                                rpta = urllib2.urlopen(solicitud)
-                               #connection =  httplib.HTTPConnection('192.168.1.106:80')
-                               #body_content = 'DEFACED'
-                               #connection.request('PUT', '/topsecret/', body_content)
                                payload = rpta.read()
                                print(payload)
                                break
