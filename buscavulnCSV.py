@@ -1,5 +1,6 @@
 #!/usr/bin/python
 #Autor : Walter Cuestas, @wcu35745
+#Note for EC Council ECC Points
 import urllib2, urllib, sys, os
 
 if len(sys.argv) < 4:
