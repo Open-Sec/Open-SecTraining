@@ -2,7 +2,7 @@
 #Autor : Walter Cuestas Agramonte @wcu35745
 #Note for EC Council ECC Points
 
-import dns.query
+#import dns.query
 import dns.zone
 import dns.resolver
 import sys
@@ -37,7 +37,16 @@ except :
 	for host in todas_las_lineas:
 		node = host.replace("\n","") + "." + sys.argv[1]
 		try:
-			buscaHOST = resolverinstance.query(node)
+			buscaHOST = resolverinstance.query(node,'A')
 			print "Found Node! : " + node + "-->" + str(buscaHOST[0])
 		except:
+			try:
+				buscaCNAME = resolverinstance.query(node,'CNAME')
+				aliasNODE = str(buscaCNAME[0])[:-1]
+                        	print "Alias Node Found! : " + node + "-->" + aliasNODE
+				#Obtiene registro A del origen del CNAME
+				buscaHOST2 = dns.resolver.query(aliasNODE,'A')
+				print "Found Node! : " + aliasNODE + "-->" + str(buscaHOST2[0])
+			except:
+				pass
 			pass
