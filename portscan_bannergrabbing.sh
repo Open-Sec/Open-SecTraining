@@ -9,7 +9,7 @@ do
 	then
 		echo "El puerto $port esta abierto" >> $2
 		echo "Banner --->" >>$2
-		curl -m 5 -i $1:$port >> $2
+		curl -s -m 5 -i $1:$port >> $2
 		echo -e "\n" >> $2
 	fi
 	port=`expr $port + 1`
