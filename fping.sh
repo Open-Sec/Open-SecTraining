@@ -13,7 +13,7 @@ while [ $nodoactual -le $nodo2 ]
 do
 	ipactual=$octeto1.$octeto2.$octeto3.$nodoactual
 	host $ipactual
-	pong=`ping -w 1 -n -c 3 $ipactual | grep "bytes from" | wc -l`
+	pong=`ping -W 1 -n -c 3 $ipactual | grep "bytes from" | wc -l`
 	if [ $pong -ge 1 ] 
 	then
 		echo "$ipactual is alive"
