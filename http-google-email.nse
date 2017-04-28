@@ -109,6 +109,7 @@ action = function(host, port)
         end
       end
     end
+    stdnse.sleep(2.0)
   end
 
  --for i, v in pairs(emails) do
