@@ -40,6 +40,7 @@ for url in todos_los_urls2test:
                                rpta = urllib2.urlopen(solicitud)
                                payload = rpta.read()
                                print(payload)
+                               print ('Usuario/Password --->',usuario,password)
                                break
                        except urllib2.HTTPError, err:
                                if err.code != 401:
