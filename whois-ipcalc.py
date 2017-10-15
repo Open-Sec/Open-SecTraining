@@ -33,4 +33,4 @@ for cada_linea in todas_las_lineas:
 			exit()
 		inetnum =ipcalc.Network(str(delimitador2[1:2]).strip('[]').replace("'","").replace("\\n",""))
 		print "Direccion IP del primer Host:"+str(inetnum.host_first())
-		print "Direccion IP del ultimo Host:"+str(inetnum.host_last())wcuestas@31337:~/ehtoolz/open-sec$
+		print "Direccion IP del ultimo Host:"+str(inetnum.host_last())
