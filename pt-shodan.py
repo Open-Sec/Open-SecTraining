@@ -1,6 +1,6 @@
 import shodan
 
-SHODAN_API_KEY = "NkaaYWmyz8rRHno46KYq0H9yYBX4hNph"
+SHODAN_API_KEY = "Colocar su API Key"
 
 api = shodan.Shodan(SHODAN_API_KEY)
 
