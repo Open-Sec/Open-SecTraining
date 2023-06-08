@@ -1,0 +1,14 @@
+root
+admin
+test
+guest
+info
+adm
+bee
+user
+administrator
+puppet
+ansible
+ec2-user
+vagrant
+azureuser
